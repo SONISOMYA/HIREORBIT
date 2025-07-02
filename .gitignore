@@ -1,0 +1,15 @@
+# Flutter
+/frontend/.dart_tool/
+/frontend/.idea/
+/frontend/.vscode/
+/frontend/build/
+/frontend/pubspec.lock
+
+# Java / Maven
+/backend/target/
+/backend/.idea/
+/backend/.vscode/
+
+# General
+.DS_Store
+*.iml
