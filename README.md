@@ -13,7 +13,7 @@ That small mistake cost me real opportunities, and it made me realize how easy i
 So, I built **HireOrbit** for myself — to **never miss a deadline again**, to **track every application**, and to feel more **in control** of my job hunt.  
 Along the way, I learned to build secure REST APIs with **Spring Boot**, implement **JWT authentication**, and design a modern, glassmorphic Flutter interface.
 
-If HireOrbit helps even one student avoid missing out on their dream role, it’s worth it. 😊
+If HireOrbit helps even one student avoid missing out on their dream role, it’s worth it. 
 
 ---
 
@@ -27,13 +27,13 @@ If HireOrbit helps even one student avoid missing out on their dream role, it’
 
 ---
 
-## ✅ Features
+##  Features
 
-- 🔐 **Secure Authentication:** Register and log in with JWT.
-- 📄 **Job CRUD:** Add, edit, delete job applications.
-- 📅 **Track Deadlines:** See upcoming deadlines at a glance.
-- 🗂️ **Status Filters:** Filter by application status.
-- 🌙 **Clean UI:** Modern glassmorphic design.
+- � **Secure Authentication:** Register and log in with JWT.
+-  **Job CRUD:** Add, edit, delete job applications.
+-  **Track Deadlines:** See upcoming deadlines at a glance.
+-  **Status Filters:** Filter by application status.
+-  **Clean UI:** Modern glassmorphic design.
 
 
 ## **Screenshots**
