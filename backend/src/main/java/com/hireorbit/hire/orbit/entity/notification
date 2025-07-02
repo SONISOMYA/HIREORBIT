@@ -1,0 +1,22 @@
+// entity/Notification.java
+package com.hireorbit.hire.orbit.entity;
+
+import jakarta.persistence.*;
+import java.time.LocalDateTime;
+
+@Entity
+public class Notification {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+
+    private String message;
+
+    private boolean isRead;
+
+    private LocalDateTime timestamp;
+
+    private Long userId; // Assuming user ID is required
+
+    // Getters, setters, constructors
+}
