@@ -44,7 +44,7 @@ If HireOrbit helps even one student avoid missing out on their dream role, it’
 
 | Home | Add Job | Job Card |
 |------|---------|----------|
-| ![Home](./screenshots/home.png) | ![Add](./screenshots/addjob.png) | ![Card](./screenshots/job_card.png) |
+| ![Home](./screenshots/home.png) | ![Add](./screenshots/addjob.png) | ![Card](./screenshots/home.png) |
 
 
 
