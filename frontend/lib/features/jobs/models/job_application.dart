@@ -1,5 +1,5 @@
 class JobApplication {
-  final int? id; 
+  final int? id;
   final String title;
   final String company;
   final String status;
@@ -26,7 +26,8 @@ class JobApplication {
       appliedDate: json['appliedDate'] != null
           ? DateTime.parse(json['appliedDate'])
           : null,
-      deadline: json['deadline'] != null ? DateTime.parse(json['deadline']) : null,
+      deadline:
+          json['deadline'] != null ? DateTime.parse(json['deadline']) : null,
       notes: json['notes'],
     );
   }
@@ -37,7 +38,6 @@ class JobApplication {
       'title': title,
       'company': company,
       'status': status,
-      'appliedDate': appliedDate?.toIso8601String(),
       'deadline': deadline?.toIso8601String(),
       'notes': notes,
     };

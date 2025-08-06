@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:hireorbit/features/auth/screens/email_input_screen.dart';
 import 'package:hireorbit/features/auth/screens/home_screen.dart';
 import 'package:hireorbit/features/auth/screens/login_screen.dart';
 import 'package:hireorbit/features/auth/screens/signUpScreen.dart';
@@ -13,6 +14,8 @@ class AppRouter {
         return MaterialPageRoute(builder: (_) => const HomeScreen());
       case '/splash':
         return MaterialPageRoute(builder: (_) => const SplashScreen());
+        case '/email':
+        return MaterialPageRoute(builder: (_) => const EmailInputScreen());
       case '/':
       default:
         return MaterialPageRoute(builder: (_) => const LoginScreen());

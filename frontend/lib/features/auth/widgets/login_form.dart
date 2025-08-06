@@ -49,27 +49,34 @@ class _LoginFormState extends State<LoginForm> {
           ),
           const SizedBox(height: 32),
           PrimaryButton(
-            label: 'Login',
-            isLoading: authProvider.isLoading,
-            onPressed: () async {
-              if (_formKey.currentState!.validate()) {
-                final success = await authProvider.login(
-                  usernameController.text.trim(),
-                  passwordController.text.trim(),
-                );
-                if (success) {
-                  Navigator.pushReplacementNamed(context, '/home');
-                } else {
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(
-                      content: Text('Login failed'),
-                      backgroundColor: Colors.redAccent,
-                    ),
-                  );
+              label: 'Login',
+              isLoading: authProvider.isLoading,
+              onPressed: () async {
+                if (_formKey.currentState!.validate()) {
+                  final success = await authProvider.login(
+                      usernameController.text.trim(),
+                      passwordController.text.trim(),
+                      context);
+
+                  if (success) {
+                    if (authProvider.loggedInEmail == null ||
+                        authProvider.loggedInEmail!.isEmpty) {
+                      Navigator.pushReplacementNamed(
+                          context, '/email'); // Ask for email
+                    } else {
+                      Navigator.pushReplacementNamed(
+                          context, '/home'); // Go to dashboard
+                    }
+                  } else {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(
+                        content: Text('Login failed'),
+                        backgroundColor: Colors.redAccent,
+                      ),
+                    );
+                  }
                 }
-              }
-            },
-          ),
+              }),
           const SizedBox(height: 12),
           TextButton(
             onPressed: () {

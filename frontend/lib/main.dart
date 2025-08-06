@@ -7,6 +7,8 @@ import 'package:hireorbit/routes/app_router.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
+final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
+
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
@@ -32,16 +34,16 @@ class MyApp extends StatelessWidget {
         ChangeNotifierProvider(
           create: (_) => JobProvider(
             service: JobService(jwt: savedToken ?? ''),
-            jwt: savedToken ?? '',
           ),
         ),
       ],
       child: MaterialApp(
+        navigatorKey: navigatorKey,
         debugShowCheckedModeBanner: false,
         title: 'HireOrbit',
         theme: _buildAppTheme(),
         onGenerateRoute: AppRouter.generateRoute,
-        initialRoute: '/splash', // ✅ ALWAYS start at splash!
+        initialRoute: '/splash',
       ),
     );
   }
@@ -78,6 +80,13 @@ class MyApp extends StatelessWidget {
             borderRadius: BorderRadius.circular(12),
           ),
         ),
+      ),
+      popupMenuTheme: PopupMenuThemeData(
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(16),
+        ),
+        color: Colors.white.withOpacity(0.9),
+        elevation: 8,
       ),
       snackBarTheme: const SnackBarThemeData(
         behavior: SnackBarBehavior.floating,
