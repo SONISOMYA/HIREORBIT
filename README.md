@@ -41,7 +41,7 @@ If HireOrbit helps even one student avoid missing out on their dream role, it’
 
 We've added a **fully-automated email reminder system** so you never miss deadlines again!
 
-### ✅ What’s New:
+### What’s New:
 
 - **Daily Reminder Emails**:  
   Sent **every morning** for jobs that have an upcoming deadline.  
@@ -69,15 +69,15 @@ We've added a **fully-automated email reminder system** so you never miss deadli
 
 | Splash Screen | Sign Up | Login |
 |---------------|---------|-------|
-| ![Splash](./screenshots/splash.png) | ![SignUp](./screenshots/sign_up.png) | ![Login](./screenshots/login.png) |
+| ![Splash](./screenshots/splash.png?v3) | ![SignUp](./screenshots/sign_up.png?v2) | ![Login](./screenshots/login.png) |
 
-| Home | Add Job | Job Card |
+| Home | Add Job | Enter Email |
 |------|---------|----------|
-| ![Home](./screenshots/home.png) | ![Add](./screenshots/addjob.png) | ![Card](./screenshots/job_added.png) |
+| ![Home](./screenshots/home.png) | ![Add](./screenshots/addjob.png) | ![Add](./screenshots/enter_email.png) | 
 
-| Deadline Email | Status Updated Email |
-|----------------|-----------------------|
-| ![Deadline](./screenshots/deadline.png) | ![Updated](./screenshots/job_status_updated.png) |
+| Deadline Email | Status Updated Email | Job added Email |
+|----------------|-----------------------|----------|
+| ![Deadline](./screenshots/deadline.png) | ![Updated](./screenshots/job_status_updated.png) |![Card](./screenshots/job_added.png) |
 
 ---
 
