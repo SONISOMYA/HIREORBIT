@@ -69,7 +69,7 @@ We've added a **fully-automated email reminder system** so you never miss deadli
 
 | Splash Screen | Sign Up | Login |
 |---------------|---------|-------|
-| ![Splash](./screenshots/splash.png?v3) | ![SignUp](./screenshots/sign_up.png?v2) | ![Login](./screenshots/login.png) |
+| ![Splash](./screenshots/splash.png?v3) | ![SignUp](./screenshots/sign_up.png?v3) | ![Login](./screenshots/login.png) |
 
 | Home | Add Job | Enter Email |
 |------|---------|----------|
