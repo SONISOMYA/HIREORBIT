@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:hireorbit/core/constants/app_colors.dart';
 import 'package:hireorbit/features/jobs/models/job_application.dart';
 import 'package:intl/intl.dart';
 
@@ -16,91 +17,113 @@ class JobCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final isNotApplied = job.status == 'NOT_APPLIED';
     final formattedDeadline = job.deadline != null
         ? DateFormat('yyyy-MM-dd').format(job.deadline!)
-        : 'No Deadline';
+        : 'No deadline set';
 
     return InkWell(
       onTap: onTap,
-      borderRadius: BorderRadius.circular(16),
+      borderRadius: BorderRadius.circular(20),
       child: Container(
-        margin: const EdgeInsets.symmetric(vertical: 10),
-        padding: const EdgeInsets.all(20),
+        margin: const EdgeInsets.symmetric(vertical: 8, horizontal: 4),
+        padding: const EdgeInsets.all(18),
         decoration: BoxDecoration(
-          color: Colors.white,
-          borderRadius: BorderRadius.circular(16),
+          color: AppColors.whiteGlass,
+          borderRadius: BorderRadius.circular(20),
           boxShadow: const [
             BoxShadow(
               color: Colors.black12,
-              blurRadius: 10,
-              offset: Offset(0, 4),
+              blurRadius: 8,
+              offset: Offset(0, 3),
             ),
           ],
         ),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            /// Title & Status Row
+            /// Title & Status
             Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
+                /// Title & Company
                 Expanded(
-                  child: Text(
-                    job.title,
-                    style: const TextStyle(
-                      fontSize: 18,
-                      fontWeight: FontWeight.w700,
-                    ),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        job.title,
+                        style: const TextStyle(
+                          fontSize: 18,
+                          fontWeight: FontWeight.w700,
+                          color: AppColors.textPrimary,
+                        ),
+                      ),
+                      const SizedBox(height: 4),
+                      Text(
+                        job.company,
+                        style: const TextStyle(
+                          fontSize: 15,
+                          color: AppColors.textSecondary,
+                        ),
+                      ),
+                    ],
                   ),
                 ),
+
+                /// Status Chip
                 Chip(
                   label: Text(
-                    job.status,
+                    job.status.replaceAll('_', ' '),
                     style: const TextStyle(
+                      fontSize: 13,
                       fontWeight: FontWeight.w600,
+                      color: AppColors.textPrimary,
                     ),
                   ),
-                  backgroundColor: Colors.deepPurple.withOpacity(0.1),
+                  backgroundColor: AppColors.primary.withOpacity(0.15),
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(8),
                   ),
                 ),
               ],
             ),
-            const SizedBox(height: 6),
 
-            /// Company
-            Text(
-              job.company,
-              style: const TextStyle(
-                fontSize: 16,
-                color: Colors.black87,
-              ),
-            ),
+            const SizedBox(height: 16),
 
-            const SizedBox(height: 12),
-
-            /// Deadline
+            /// Deadline or Info
             Row(
               children: [
-                const Icon(Icons.calendar_today,
-                    size: 18, color: Colors.deepPurple),
-                const SizedBox(width: 6),
+                Icon(
+                  isNotApplied
+                      ? Icons.calendar_today
+                      : Icons.check_circle_outline,
+                  size: 18,
+                  color: isNotApplied ? AppColors.primary : Colors.green,
+                ),
+                const SizedBox(width: 8),
                 Text(
-                  'Deadline: $formattedDeadline',
+                  isNotApplied
+                      ? 'Deadline: $formattedDeadline'
+                      : 'Already applied',
                   style: const TextStyle(
-                    fontSize: 15,
-                    color: Colors.black54,
+                    fontSize: 14.5,
+                    color: AppColors.textSecondary,
                   ),
                 ),
               ],
             ),
 
-            /// Delete icon aligned right
+            const SizedBox(height: 12),
+
+            /// Delete Button (Right aligned)
             Align(
               alignment: Alignment.centerRight,
               child: IconButton(
-                icon: const Icon(Icons.delete_outline),
+                icon: const Icon(
+                  Icons.delete_outline,
+                  color: Colors.black54,
+                ),
                 onPressed: onDelete,
                 tooltip: 'Delete Application',
               ),

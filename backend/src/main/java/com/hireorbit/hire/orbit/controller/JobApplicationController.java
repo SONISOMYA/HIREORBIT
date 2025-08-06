@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.*;
 import jakarta.validation.Valid;
 
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/api/job_applications")
@@ -47,6 +48,17 @@ public class JobApplicationController {
         User user = userService.getByUsername(userDetails.getUsername());
         return ResponseEntity.ok(jobService.getAll(user));
     }
+
+    @GetMapping("/filter")
+    public ResponseEntity<List<JobApplication>> filterByStatus(
+            @RequestParam String status,
+            @AuthenticationPrincipal UserDetails userDetails) {
+
+        User user = userService.getByUsername(userDetails.getUsername());
+        List<JobApplication> filtered = jobService.filterByStatus(user, status);
+        return ResponseEntity.ok(filtered);
+    }
+
 
     @PutMapping("/{id}")
     public ResponseEntity<JobApplication> update(

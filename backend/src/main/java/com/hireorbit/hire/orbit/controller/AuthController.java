@@ -3,13 +3,19 @@ package com.hireorbit.hire.orbit.controller;
 import com.hireorbit.hire.orbit.entity.User;
 import com.hireorbit.hire.orbit.payload.JwtResponse;
 import com.hireorbit.hire.orbit.payload.LoginRequest;
+import com.hireorbit.hire.orbit.payload.UpdateEmailRequest;
 import com.hireorbit.hire.orbit.repository.UserRepository;
+import com.hireorbit.hire.orbit.service.UserService;
 import com.hireorbit.hire.orbit.util.JwtUtil;
+
 import lombok.RequiredArgsConstructor;
+
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
@@ -22,6 +28,7 @@ public class AuthController {
     private final PasswordEncoder passwordEncoder;
     private final AuthenticationManager authenticationManager;
     private final JwtUtil jwtUtil;
+    private final UserService userService;
 
     @PostMapping("/register")
     public ResponseEntity<String> register(@RequestBody User user) {
@@ -45,8 +52,8 @@ public class AuthController {
                 )
         );
 
-        String username = authentication.getName(); // ✅ Get username
-        String token = jwtUtil.generateToken(username); // ✅ Pass username
+        String username = authentication.getName();
+        String token = jwtUtil.generateToken(username);
 
         return ResponseEntity.ok(new JwtResponse(token));
     }
@@ -54,5 +61,17 @@ public class AuthController {
     @GetMapping("/profile")
     public ResponseEntity<String> getProfile() {
         return ResponseEntity.ok("You are authenticated! ✅");
+    }
+
+    // ✅ New endpoint to update email
+    @PutMapping("/email")
+    public ResponseEntity<String> updateEmail(
+            @RequestBody UpdateEmailRequest request,
+            @AuthenticationPrincipal UserDetails userDetails) {
+
+        String username = userDetails.getUsername();
+        userService.updateEmail(username, request.getEmail());
+
+        return ResponseEntity.ok("✅ Email updated successfully!");
     }
 }

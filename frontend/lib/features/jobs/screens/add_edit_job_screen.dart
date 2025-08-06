@@ -1,8 +1,16 @@
+import 'dart:convert';
+import 'dart:ui';
+
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:hireorbit/features/jobs/models/job_application.dart';
-import 'package:hireorbit/providers/job_provider.dart';
-import 'package:google_fonts/google_fonts.dart';
+import 'package:http/http.dart' as http;
+import 'package:dropdown_button2/dropdown_button2.dart';
+
+import '../../../core/constants/app_colors.dart';
+import '../../../core/constants/text_styles.dart';
+import '../../../core/constants/glass_container.dart';
+import '../../jobs/models/job_application.dart';
+import '../../../providers/job_provider.dart';
 
 class AddEditJobScreen extends StatefulWidget {
   final JobApplication? existingJob;
@@ -18,23 +26,29 @@ class _AddEditJobScreenState extends State<AddEditJobScreen> {
 
   late String _title;
   late String _company;
-  late String _status;
-  DateTime? _appliedDate;
+  late String _statusDisplay;
   DateTime? _deadline;
   String _notes = '';
 
-  final List<String> _statusOptions = [
-    'Not Applied',
-    'Applied',
-    'In Progress',
-    'Interview Scheduled',
-    'Interviewed',
-    'Offer Received',
-    'Accepted',
-    'Rejected',
-    'On Hold',
-    'Withdrawn'
-  ];
+  final Map<String, String> _statusMap = {
+    'Not Applied': 'NOT_APPLIED',
+    'Applied': 'APPLIED',
+    'In Progress': 'IN_PROGRESS',
+    'Interview Scheduled': 'INTERVIEW_SCHEDULED',
+    'Interviewed': 'INTERVIEWED',
+    'Offer Received': 'OFFER_RECEIVED',
+    'Accepted': 'ACCEPTED',
+    'Rejected': 'REJECTED',
+    'On Hold': 'ON_HOLD',
+    'Withdrawn': 'WITHDRAWN',
+  };
+
+  String _getDisplayStatus(String backendStatus) {
+    return _statusMap.entries
+        .firstWhere((e) => e.value == backendStatus,
+            orElse: () => const MapEntry('Not Applied', 'NOT_APPLIED'))
+        .key;
+  }
 
   @override
   void initState() {
@@ -42,15 +56,13 @@ class _AddEditJobScreenState extends State<AddEditJobScreen> {
     if (widget.existingJob != null) {
       _title = widget.existingJob!.title;
       _company = widget.existingJob!.company;
-      _status = widget.existingJob!.status;
-      _appliedDate = widget.existingJob!.appliedDate;
+      _statusDisplay = _getDisplayStatus(widget.existingJob!.status);
       _deadline = widget.existingJob!.deadline;
       _notes = widget.existingJob!.notes ?? '';
     } else {
       _title = '';
       _company = '';
-      _status = _statusOptions.first;
-      _notes = '';
+      _statusDisplay = _statusMap.keys.first;
     }
   }
 
@@ -59,119 +71,120 @@ class _AddEditJobScreenState extends State<AddEditJobScreen> {
     final jobProvider = Provider.of<JobProvider>(context);
 
     return Scaffold(
+      backgroundColor: AppColors.background,
       appBar: AppBar(
+        backgroundColor: Colors.transparent,
+        elevation: 0,
         title: Text(
           widget.existingJob == null ? 'Add Application' : 'Edit Application',
-          style: GoogleFonts.nunito(fontWeight: FontWeight.w700),
+          style: AppTextStyles.h2,
         ),
       ),
       body: SingleChildScrollView(
-        padding: const EdgeInsets.all(20),
-        child: Container(
-          padding: const EdgeInsets.all(20),
-          decoration: BoxDecoration(
-            color: Colors.white,
-            borderRadius: BorderRadius.circular(16),
-            boxShadow: const [
-              BoxShadow(
-                color: Colors.black12,
-                blurRadius: 10,
-                offset: Offset(0, 4),
-              ),
-            ],
-          ),
-          child: Form(
-            key: _formKey,
-            child: Column(
-              children: [
-                _buildTextField(
-                  label: 'Title',
-                  initialValue: _title,
-                  onSaved: (val) => _title = val ?? '',
-                ),
-                const SizedBox(height: 16),
-                _buildTextField(
-                  label: 'Company',
-                  initialValue: _company,
-                  onSaved: (val) => _company = val ?? '',
-                ),
-                const SizedBox(height: 16),
-                _buildStatusDropdown(),
-                const SizedBox(height: 16),
-                _buildDatePicker(
-                  label: 'Applied Date',
-                  selected: _appliedDate,
-                  onPicked: (date) => setState(() => _appliedDate = date),
-                ),
-                const SizedBox(height: 16),
-                _buildDatePicker(
-                  label: 'Deadline',
-                  selected: _deadline,
-                  onPicked: (date) => setState(() => _deadline = date),
-                ),
-                const SizedBox(height: 16),
-                _buildNotesField(),
-                const SizedBox(height: 24),
-                SizedBox(
-                  width: double.infinity,
-                  child: ElevatedButton(
-                    style: ElevatedButton.styleFrom(
-                      padding: const EdgeInsets.symmetric(vertical: 18),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(12),
-                      ),
-                    ),
-                    onPressed: () async {
-                      print('Pressed submit');
-                      if (_formKey.currentState!.validate()) {
-                        print('Form is valid');
-                        _formKey.currentState!.save();
-
-                        print('Title: $_title');
-                        print('Company: $_company');
-                        print('Status: $_status');
-
-                        final newJob = JobApplication(
-                          id: widget.existingJob?.id,
-                          title: _title,
-                          company: _company,
-                          status: _status,
-                          appliedDate: _appliedDate,
-                          deadline: _deadline,
-                          notes: _notes.isEmpty ? null : _notes,
-                        );
-
-                        try {
-                          if (widget.existingJob == null) {
-                            await jobProvider.addJob(newJob);
-                            print('Job added successfully');
-                          } else {
-                            await jobProvider.updateJob(newJob);
-                            print('Job updated successfully');
-                          }
-
-                          if (mounted) {
-                            Navigator.pop(context);
-                          }
-                        } catch (e) {
-                          print('Error adding job: $e');
-                        }
-                      } else {
-                        print('Form is invalid');
-                      }
-                    },
-                    child: Text(
-                      widget.existingJob == null
-                          ? 'Add Application'
-                          : 'Update Application',
-                      style: GoogleFonts.nunito(
-                        fontSize: 16,
-                        fontWeight: FontWeight.w700,
-                      ),
-                    ),
+        padding: const EdgeInsets.all(24),
+        child: ClipRRect(
+          borderRadius: BorderRadius.circular(24),
+          child: BackdropFilter(
+            filter: ImageFilter.blur(sigmaX: 25, sigmaY: 25),
+            child: Container(
+              width: double.infinity,
+              padding: const EdgeInsets.all(32),
+              decoration: BoxDecoration(
+                color: Colors.white.withOpacity(0.15),
+                borderRadius: BorderRadius.circular(24),
+                border: Border.all(color: Colors.white.withOpacity(0.2)),
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black.withOpacity(0.05),
+                    blurRadius: 30,
+                    offset: const Offset(0, 20),
                   ),
+                ],
+              ),
+              child: Form(
+                key: _formKey,
+                child: Column(
+                  children: [
+                    _buildTextField(
+                      label: 'Job Title',
+                      initialValue: _title,
+                      onSaved: (val) => _title = val ?? '',
+                    ),
+                    const SizedBox(height: 20),
+                    _buildTextField(
+                      label: 'Company Name',
+                      initialValue: _company,
+                      onSaved: (val) => _company = val ?? '',
+                    ),
+                    const SizedBox(height: 20),
+                    _buildStatusDropdown(),
+                    const SizedBox(height: 20),
+
+                    // ✅ Show deadline only if status is NOT_APPLIED
+                    if (_statusMap[_statusDisplay] == 'NOT_APPLIED')
+                      _buildDeadlinePicker(),
+
+                    const SizedBox(height: 20),
+                    _buildTextField(
+                      label: 'Notes',
+                      initialValue: _notes,
+                      maxLines: 4,
+                      onSaved: (val) => _notes = val ?? '',
+                    ),
+                    const SizedBox(height: 30),
+                    SizedBox(
+                      width: double.infinity,
+                      child: ElevatedButton(
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: AppColors.primary,
+                          foregroundColor: Colors.white,
+                          padding: const EdgeInsets.symmetric(vertical: 16),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                        ),
+                        onPressed: () async {
+                          if (_formKey.currentState!.validate()) {
+                            _formKey.currentState!.save();
+
+                            final newJob = JobApplication(
+                              id: widget.existingJob?.id,
+                              title: _title,
+                              company: _company,
+                              status: _statusMap[_statusDisplay]!,
+                              deadline: _deadline,
+                              notes: _notes.isEmpty ? null : _notes,
+                            );
+
+                            try {
+                              if (widget.existingJob == null) {
+                                await jobProvider.addJob(newJob);
+                              } else {
+                                await jobProvider.updateJob(newJob);
+                              }
+
+                              if (mounted) Navigator.pop(context);
+                            } catch (e) {
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                SnackBar(
+                                  content: Text('Error: ${e.toString()}'),
+                                ),
+                              );
+                            }
+                          }
+                        },
+                        child: Text(
+                          widget.existingJob == null
+                              ? 'Add Application'
+                              : 'Update Application',
+                          style: AppTextStyles.button
+                              .copyWith(color: Colors.white),
+                        ),
+                      ),
+                    )
+                  ],
                 ),
-              ],
+              ),
             ),
           ),
         ),
@@ -190,6 +203,18 @@ class _AddEditJobScreenState extends State<AddEditJobScreen> {
       maxLines: maxLines,
       decoration: InputDecoration(
         labelText: label,
+        labelStyle: AppTextStyles.body.copyWith(
+          color: Colors.black87,
+          fontWeight: FontWeight.w600,
+        ),
+        filled: true,
+        fillColor: Colors.white.withOpacity(0.4),
+        border: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(16),
+          borderSide: BorderSide.none,
+        ),
+        contentPadding:
+            const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
       ),
       validator: (value) =>
           (value == null || value.isEmpty) ? 'Required' : null,
@@ -197,88 +222,96 @@ class _AddEditJobScreenState extends State<AddEditJobScreen> {
     );
   }
 
-  Widget _buildNotesField() {
-    return TextFormField(
-      initialValue: _notes,
-      maxLines: 4,
-      decoration: const InputDecoration(
-        labelText: 'Notes (Optional)',
-      ),
-      onSaved: (val) => _notes = val ?? '',
-    );
-  }
-
   Widget _buildStatusDropdown() {
-    final safeValue =
-        _statusOptions.contains(_status) ? _status : _statusOptions.first;
-
-    return DropdownButtonFormField<String>(
-      value: safeValue,
-      icon: const Icon(Icons.arrow_drop_down, color: Colors.deepPurple),
-      decoration: InputDecoration(
-        labelText: 'Status',
-        filled: true,
-        fillColor: Colors.white,
-        contentPadding:
-            const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
-        border: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(100),
-          borderSide: BorderSide.none,
-        ),
-      ),
-      dropdownColor: Colors.white,
-      style: GoogleFonts.nunito(
-        fontSize: 16,
-        color: Colors.black87,
-      ),
-      items: _statusOptions
-          .map(
-            (status) => DropdownMenuItem(
+    return GlassContainer(
+      child: DropdownButtonHideUnderline(
+        child: DropdownButton2<String>(
+          isExpanded: true,
+          value: _statusDisplay,
+          hint: Text(
+            'Select Status',
+            style: AppTextStyles.body.copyWith(color: Colors.black87),
+          ),
+          items: _statusMap.keys.map((status) {
+            return DropdownMenuItem(
               value: status,
               child: Text(
                 status,
-                style: GoogleFonts.nunito(fontSize: 16),
+                style: AppTextStyles.body.copyWith(color: Colors.black87),
               ),
+            );
+          }).toList(),
+          onChanged: (value) {
+            if (value != null) {
+              setState(() {
+                _statusDisplay = value;
+
+                // ✅ Clear deadline when not "Not Applied"
+                if (_statusMap[value] != 'NOT_APPLIED') {
+                  _deadline = null;
+                }
+              });
+            }
+          },
+          buttonStyleData: ButtonStyleData(
+            height: 50,
+            padding: const EdgeInsets.symmetric(horizontal: 16),
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(20),
+              border: Border.all(color: Colors.white.withOpacity(0.3)),
+              color: Colors.white.withOpacity(0.15),
             ),
-          )
-          .toList(),
-      onChanged: (value) {
-        if (value != null) setState(() => _status = value);
-      },
-      onSaved: (value) {
-        if (value != null) _status = value;
-      },
+          ),
+          dropdownStyleData: DropdownStyleData(
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(20),
+              color: Colors.white.withOpacity(0.85),
+            ),
+          ),
+          iconStyleData: const IconStyleData(
+            icon: Icon(Icons.keyboard_arrow_down_rounded,
+                color: Colors.deepPurple),
+          ),
+        ),
+      ),
     );
   }
 
-  Widget _buildDatePicker({
-    required String label,
-    DateTime? selected,
-    required void Function(DateTime) onPicked,
-  }) {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+  Widget _buildDeadlinePicker() {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Expanded(
-          child: Text(
-            selected == null
-                ? '$label: Not set'
-                : '$label: ${selected.toLocal().toIso8601String().split('T').first}',
-            style: GoogleFonts.nunito(),
+        if (_deadline != null)
+          Padding(
+            padding: const EdgeInsets.only(bottom: 8),
+            child: Text(
+              'Deadline: ${_deadline!.toLocal().toIso8601String().split('T').first}',
+              style: AppTextStyles.body.copyWith(fontSize: 16),
+            ),
           ),
-        ),
-        TextButton(
+        ElevatedButton.icon(
+          style: ElevatedButton.styleFrom(
+            backgroundColor: AppColors.primary,
+            foregroundColor: Colors.white,
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(8),
+            ),
+          ),
+          icon: const Icon(Icons.calendar_today, size: 18),
+          label: const Text('Pick Date'),
           onPressed: () async {
             final picked = await showDatePicker(
               context: context,
-              initialDate: selected ?? DateTime.now(),
+              initialDate: _deadline ?? DateTime.now(),
               firstDate: DateTime(2000),
               lastDate: DateTime(2100),
             );
-            if (picked != null) onPicked(picked);
+            if (picked != null) {
+              setState(() => _deadline = picked);
+            }
           },
-          child: const Text('Pick Date'),
-        ),
+        )
       ],
     );
   }

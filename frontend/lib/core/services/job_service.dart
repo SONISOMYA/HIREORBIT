@@ -20,20 +20,42 @@ class JobService {
       final List data = json.decode(res.body);
       return data.map((e) => JobApplication.fromJson(e)).toList();
     } else {
-      throw Exception('Failed to fetch jobs');
+      throw Exception('Failed to fetch jobs → ${res.body}');
+    }
+  }
+
+  Future<List<JobApplication>> getFiltered({required String status}) async {
+    final url = '$baseUrl/filter?status=$status';
+
+    final res = await http.get(Uri.parse(url), headers: _headers);
+    if (res.statusCode == 200) {
+      final List data = json.decode(res.body);
+      return data.map((e) => JobApplication.fromJson(e)).toList();
+    } else {
+      throw Exception('Failed to fetch filtered jobs → ${res.body}');
+    }
+  }
+
+  Future<List<String>> getCompanySuggestions(String query) async {
+    final url = Uri.parse('http://127.0.0.1:8080/api/companies/search?query=$query');
+
+    final response =
+        await http.get(Uri.parse(url as String), headers: _headers);
+
+    if (response.statusCode == 200) {
+      final List data = json.decode(response.body);
+      return data.cast<String>();
+    } else {
+      throw Exception('Failed to fetch company suggestions → ${response.body}');
     }
   }
 
   Future<void> create(JobApplication job) async {
     final response = await http.post(
       Uri.parse(baseUrl),
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': 'Bearer $jwt',
-      },
+      headers: _headers,
       body: jsonEncode(job.toJson()),
     );
-
     if (response.statusCode != 201) {
       throw Exception('Failed to create job → ${response.body}');
     }
@@ -46,7 +68,7 @@ class JobService {
       body: json.encode(job.toJson()),
     );
     if (res.statusCode != 200) {
-      throw Exception('Failed to update job');
+      throw Exception('Failed to update job → ${res.body}');
     }
   }
 
@@ -56,7 +78,7 @@ class JobService {
       headers: _headers,
     );
     if (res.statusCode != 200) {
-      throw Exception('Failed to delete job');
+      throw Exception('Failed to delete job → ${res.body}');
     }
   }
 }

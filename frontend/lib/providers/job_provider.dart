@@ -8,14 +8,21 @@ class JobProvider extends ChangeNotifier {
   List<JobApplication> jobs = [];
   bool isLoading = false;
 
-  JobProvider({required this.service, required String jwt});
+  // ✅ Default filter status is empty = no filter
+  String filterStatus = '';
+
+  JobProvider({required this.service});
 
   Future<void> fetchJobs() async {
     isLoading = true;
     notifyListeners();
 
     try {
-      jobs = await service.getAll();
+      if (filterStatus.isEmpty) {
+        jobs = await service.getAll();
+      } else {
+        jobs = await service.getFiltered(status: filterStatus);
+      }
     } catch (e) {
       debugPrint('Error fetching jobs: $e');
     } finally {
@@ -37,5 +44,10 @@ class JobProvider extends ChangeNotifier {
   Future<void> deleteJob(int id) async {
     await service.delete(id);
     await fetchJobs();
+  }
+
+  void clearFilter() {
+    filterStatus = '';
+    fetchJobs();
   }
 }
