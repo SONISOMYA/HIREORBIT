@@ -4,7 +4,7 @@ import 'package:http/http.dart' as http;
 import 'api_service.dart';
 
 const String baseUrl =
-    'http://localhost:8080/api'; // or your actual backend URL
+    "https://hireorbit.onrender.com"; // or your actual backend URL
 
 class AuthService {
   final ApiService _apiService = ApiService();
