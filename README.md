@@ -1,7 +1,7 @@
 # HireOrbit — Internship & Job Application Tracker
 
 HireOrbit is your personal assistant for managing all your internship and job applications in one organized place.  
-It’s built with **Spring Boot**, **JWT authentication**, **Flutter UI**, and a clean backend–frontend separation.
+It’s built with **Spring Boot**,**Spring Security** ,**JWT authentication**, **Flutter UI**, and a clean backend–frontend separation.
 
 ---
 
@@ -57,7 +57,7 @@ We've added a **fully-automated email reminder system** so you never miss deadli
   Every time you update the status of a job (e.g. from "Applied" to "Interviewing"), HireOrbit automatically sends you an update email:
   > _“The status for your application at Google for SDE has been updated to ‘Interviewing’.”_
 
-### 🔧 How It Works
+### How It Works
 
 - Uses Spring Boot’s `@Scheduled` tasks to check for deadlines every day/hour.
 - All emails are sent via `JavaMailSender`.
@@ -65,7 +65,7 @@ We've added a **fully-automated email reminder system** so you never miss deadli
 
 ---
 
-## 🖼️ Screenshots
+## Screenshots
 
 | Splash Screen | Sign Up | Login |
 |---------------|---------|-------|
@@ -81,7 +81,7 @@ We've added a **fully-automated email reminder system** so you never miss deadli
 
 ---
 
-## 🚀 Getting Started
+## Getting Started
 
 ### 1️⃣ Clone the repo
 
@@ -96,7 +96,7 @@ cd HireOrbit
 cd backend
 ./mvnw spring-boot:run
 ```
-###3️⃣ Frontend
+### 3️⃣ Frontend
 ```bash
 cd frontend
 flutter pub get
