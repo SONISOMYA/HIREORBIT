@@ -14,7 +14,11 @@ public interface JobApplicationRepository extends JpaRepository<JobApplication, 
 
     List<JobApplication> findByUserAndStatusIgnoreCase(User user, String status);
 
-    // Eagerly fetch associated User to prevent LazyInitializationException
+    // Fetch all jobs with associated User (for all users)
+    @Query("SELECT j FROM JobApplication j JOIN FETCH j.user")
+    List<JobApplication> findAllWithUser();
+
+    // ✅ Fetch jobs for a specific user with their User eagerly loaded
     @Query("SELECT j FROM JobApplication j JOIN FETCH j.user WHERE j.user = :user")
-    List<JobApplication> findByUserWithUser(@Param("user") User user);
+    List<JobApplication> findByUserEager(@Param("user") User user);
 }

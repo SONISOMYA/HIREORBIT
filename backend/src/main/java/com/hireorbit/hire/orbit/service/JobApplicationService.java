@@ -34,10 +34,9 @@ public class JobApplicationService {
 
         return savedJob;
     }
-
     public List<JobApplication> getAll(User user) {
-        // Use eager fetch method to avoid LazyInitializationException
-        return repository.findByUserWithUser(user);
+        // ✅ Use the new method for eager fetch
+        return repository.findByUserEager(user);
     }
 
     public Optional<JobApplication> getById(Long id) {
