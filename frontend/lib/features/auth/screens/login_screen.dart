@@ -23,8 +23,7 @@ class LoginScreen extends StatelessWidget {
                 width: 400,
                 padding: const EdgeInsets.all(32),
                 decoration: BoxDecoration(
-                  color: Colors.white.withOpacity(0.15),
-                  borderRadius: BorderRadius.circular(24),
+                  color: Colors.white.withOpacity(0.16),                  borderRadius: BorderRadius.circular(24),
                   border: Border.all(
                     color: Colors.white.withOpacity(0.2),
                   ),
