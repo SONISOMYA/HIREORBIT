@@ -1,23 +1,42 @@
 import 'dart:convert';
-import '../services/api_service.dart';
+import 'package:http/http.dart' as http;
 
 class AuthService {
-  final ApiService _apiService = ApiService();
+  // Full base URL including /api
+  final String baseUrl = "https://hireorbit.onrender.com/api";
 
+  /// ✅ Register user
   Future<bool> register(String username, String password) async {
-    final response = await _apiService.post('/auth/register', {
-      'username': username,
-      'password': password,
-    });
+    final url = Uri.parse('$baseUrl/auth/register');
+    final response = await http.post(
+      url,
+      headers: {'Content-Type': 'application/json'},
+      body: jsonEncode({
+        'username': username,
+        'password': password,
+        // optionally add 'email': '', if your backend allows
+      }),
+    );
 
-    return response.statusCode == 200;
+    if (response.statusCode == 200) {
+      return true;
+    } else {
+      print('Register failed: ${response.body}');
+      return false;
+    }
   }
 
+  /// ✅ Login user
   Future<String?> login(String username, String password) async {
-    final response = await _apiService.post('/auth/login', {
-      'username': username,
-      'password': password,
-    });
+    final url = Uri.parse('$baseUrl/auth/login');
+    final response = await http.post(
+      url,
+      headers: {'Content-Type': 'application/json'},
+      body: jsonEncode({
+        'username': username,
+        'password': password,
+      }),
+    );
 
     if (response.statusCode == 200) {
       final data = jsonDecode(response.body);
@@ -28,9 +47,11 @@ class AuthService {
     }
   }
 
+  /// ✅ Fetch email
   Future<String?> fetchEmail(String token) async {
-    final response = await _apiService.get(
-      '/user/email',
+    final url = Uri.parse('$baseUrl/user/email');
+    final response = await http.get(
+      url,
       headers: {'Authorization': 'Bearer $token'},
     );
 
@@ -38,17 +59,28 @@ class AuthService {
       final json = jsonDecode(response.body);
       return json['email'];
     } else {
+      print('Fetch email failed: ${response.body}');
       return null;
     }
   }
 
+  /// ✅ Update email
   Future<bool> updateEmail(String token, String email) async {
-    final response = await _apiService.put(
-      '/auth/email',
-      {'email': email},
-      headers: {'Authorization': 'Bearer $token'},
+    final url = Uri.parse('$baseUrl/auth/email');
+    final response = await http.put(
+      url,
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer $token',
+      },
+      body: jsonEncode({'email': email}),
     );
 
-    return response.statusCode == 200;
+    if (response.statusCode == 200) {
+      return true;
+    } else {
+      print('Update email failed: ${response.body}');
+      return false;
+    }
   }
 }
