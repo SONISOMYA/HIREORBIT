@@ -1,8 +1,8 @@
 package com.hireorbit.hire.orbit.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
 import lombok.*;
 
 import java.time.LocalDate;
@@ -29,12 +29,11 @@ public class JobApplication {
     private String status;
 
     private LocalDate appliedDate;
-
     private LocalDate deadline;
-
     private String notes;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id")
+    @JsonIgnore // prevents exposing password & lazy-load issues
     private User user;
 }

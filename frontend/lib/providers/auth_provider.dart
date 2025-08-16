@@ -7,9 +7,10 @@ class AuthProvider with ChangeNotifier {
 
   bool isLoading = false;
   String? token;
-  String? loggedInEmail;
+  String? email;
 
-  Future<bool> login(String username, String password, BuildContext context) async {
+  /// Login function
+  Future<bool> login(String username, String password) async {
     isLoading = true;
     notifyListeners();
 
@@ -21,22 +22,18 @@ class AuthProvider with ChangeNotifier {
         final prefs = await SharedPreferences.getInstance();
         await prefs.setString('jwt', token!);
 
-        /// ✅ fetch email
-        loggedInEmail = await _authService.fetchEmail(token!);
-
+        email = await _authService.fetchEmail(token!);
         return true;
       } else {
         return false;
       }
-    } catch (e) {
-      debugPrint('Login error: $e');
-      return false;
     } finally {
       isLoading = false;
       notifyListeners();
     }
   }
 
+  /// Register function
   Future<bool> register(String username, String password) async {
     isLoading = true;
     notifyListeners();
@@ -49,20 +46,22 @@ class AuthProvider with ChangeNotifier {
     }
   }
 
+  /// Logout
   Future<void> logout() async {
     token = null;
-    loggedInEmail = null;
+    email = null;
     final prefs = await SharedPreferences.getInstance();
     await prefs.remove('jwt');
     notifyListeners();
   }
 
+  /// Load token on app start
   Future<void> loadToken() async {
     final prefs = await SharedPreferences.getInstance();
     token = prefs.getString('jwt');
 
     if (token != null) {
-      loggedInEmail = await _authService.fetchEmail(token!);
+      email = await _authService.fetchEmail(token!);
     }
 
     notifyListeners();

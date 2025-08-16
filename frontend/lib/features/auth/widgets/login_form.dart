@@ -1,11 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:hireorbit/providers/auth_provider.dart';
 import 'package:provider/provider.dart';
-
-import '../../../core/constants/text_styles.dart';
-import '../../../core/constants/app_colors.dart';
-import '../../../core/utils/validators.dart';
-import '../../../shared/widgets/primary_button.dart';
+import '../../../providers/auth_provider.dart';
 
 class LoginForm extends StatefulWidget {
   const LoginForm({super.key});
@@ -38,55 +33,47 @@ class _LoginFormState extends State<LoginForm> {
           TextFormField(
             controller: usernameController,
             decoration: _inputDecoration('Username'),
-            validator: Validators.validateUsername,
+            validator: (val) => val!.isEmpty ? 'Enter username' : null,
           ),
           const SizedBox(height: 20),
           TextFormField(
             controller: passwordController,
             obscureText: true,
             decoration: _inputDecoration('Password'),
-            validator: Validators.validatePassword,
+            validator: (val) => val!.isEmpty ? 'Enter password' : null,
           ),
           const SizedBox(height: 32),
-          PrimaryButton(
-              label: 'Login',
-              isLoading: authProvider.isLoading,
-              onPressed: () async {
-                if (_formKey.currentState!.validate()) {
-                  final success = await authProvider.login(
-                      usernameController.text.trim(),
-                      passwordController.text.trim(),
-                      context);
-
-                  if (success) {
-                    if (authProvider.loggedInEmail == null ||
-                        authProvider.loggedInEmail!.isEmpty) {
-                      Navigator.pushReplacementNamed(
-                          context, '/email'); // Ask for email
-                    } else {
-                      Navigator.pushReplacementNamed(
-                          context, '/home'); // Go to dashboard
+          authProvider.isLoading
+              ? const Center(child: CircularProgressIndicator())
+              : ElevatedButton(
+                  onPressed: () async {
+                    if (_formKey.currentState!.validate()) {
+                      final success = await authProvider.login(
+                        usernameController.text.trim(),
+                        passwordController.text.trim(),
+                      );
+                      if (success) {
+                        Navigator.pushReplacementNamed(context, '/home');
+                      } else {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          const SnackBar(
+                            content: Text('Login failed'),
+                            backgroundColor: Colors.red,
+                          ),
+                        );
+                      }
                     }
-                  } else {
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(
-                        content: Text('Login failed'),
-                        backgroundColor: Colors.redAccent,
-                      ),
-                    );
-                  }
-                }
-              }),
+                  },
+                  child: const Text('Login'),
+                ),
           const SizedBox(height: 12),
           TextButton(
-            onPressed: () {
-              Navigator.pushNamed(context, '/signup');
-            },
+            onPressed: () => Navigator.pushNamed(context, '/signup'),
             child: const Text(
-              'Don\'t have an account? Sign Up',
+              'Don’t have an account? Sign Up',
               style: TextStyle(
                 fontWeight: FontWeight.w600,
-                color: AppColors.primary,
+                color: Colors.deepPurple,
               ),
             ),
           ),
@@ -98,19 +85,13 @@ class _LoginFormState extends State<LoginForm> {
   InputDecoration _inputDecoration(String label) {
     return InputDecoration(
       labelText: label,
-      labelStyle: AppTextStyles.subtitle.copyWith(
-        fontWeight: FontWeight.w500,
-      ),
       filled: true,
       fillColor: Colors.white.withOpacity(0.7),
       border: OutlineInputBorder(
         borderRadius: BorderRadius.circular(14),
         borderSide: BorderSide.none,
       ),
-      contentPadding: const EdgeInsets.symmetric(
-        horizontal: 20,
-        vertical: 18,
-      ),
+      contentPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 18),
     );
   }
 }

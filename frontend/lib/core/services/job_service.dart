@@ -7,7 +7,7 @@ class JobService {
 
   JobService({required this.jwt});
 
-  final String baseUrl = 'http://localhost:8080/api/job_applications';
+  final String baseUrl = 'https://hireorbit.onrender.com/api/job_applications';
 
   Map<String, String> get _headers => {
         'Authorization': 'Bearer $jwt',
@@ -26,7 +26,6 @@ class JobService {
 
   Future<List<JobApplication>> getFiltered({required String status}) async {
     final url = '$baseUrl/filter?status=$status';
-
     final res = await http.get(Uri.parse(url), headers: _headers);
     if (res.statusCode == 200) {
       final List data = json.decode(res.body);
@@ -37,10 +36,10 @@ class JobService {
   }
 
   Future<List<String>> getCompanySuggestions(String query) async {
-    final url = Uri.parse('http://127.0.0.1:8080/api/companies/search?query=$query');
-
-    final response =
-        await http.get(Uri.parse(url as String), headers: _headers);
+    // ✅ Update this too
+    final url =
+        'https://hireorbit.onrender.com/api/companies/search?query=$query';
+    final response = await http.get(Uri.parse(url), headers: _headers);
 
     if (response.statusCode == 200) {
       final List data = json.decode(response.body);
