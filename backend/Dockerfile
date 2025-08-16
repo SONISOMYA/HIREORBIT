@@ -1,26 +1,11 @@
-# ======================
-# Build stage
-# ======================
-FROM maven:3.9.6-eclipse-temurin-21 AS build
-WORKDIR /app
+FROM maven:3.9.8-eclipse-temurin-21 AS build
 
-# Copy pom.xml and download dependencies first (cache optimization)
-COPY pom.xml .
-RUN mvn dependency:go-offline -B
+COPY . .
 
-# Copy source code
-COPY src ./src
-
-# Package the app
 RUN mvn clean package -DskipTests
 
-# ======================
-# Runtime stage
-# ======================
+ 
 FROM eclipse-temurin:21-jdk-alpine
-WORKDIR /app
-
-# Copy the built JAR from build stage
 COPY --from=build /app/target/hire-orbit-0.0.1-SNAPSHOT.jar app.jar
 
 # Expose the port (Render uses $PORT)
