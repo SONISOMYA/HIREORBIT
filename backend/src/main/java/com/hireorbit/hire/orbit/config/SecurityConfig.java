@@ -29,7 +29,7 @@ public class SecurityConfig {
     private final JwtAuthenticationFilter jwtAuthenticationFilter;
     private final UserDetailsService customUserDetailsService;
 
-    // Chain 1: API only — protected by JWT
+    // Chain 1: API endpoints
     @Bean
     @Order(1)
     public SecurityFilterChain apiChain(HttpSecurity http) throws Exception {
@@ -39,7 +39,7 @@ public class SecurityConfig {
                 .csrf(csrf -> csrf.disable())
                 .sessionManagement(s -> s.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/api/auth/**").permitAll()
+                        .requestMatchers("/api/auth/**").permitAll()  // login/register allowed
                         .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
                         .anyRequest().authenticated()
                 )
@@ -52,12 +52,16 @@ public class SecurityConfig {
         return http.build();
     }
 
-    // Chain 2: everything else — public
+    // Chain 2: non-API (static files, swagger, etc.)
     @Bean
     @Order(2)
     public SecurityFilterChain publicChain(HttpSecurity http) throws Exception {
         http
-                .securityMatcher("/", "/index.html", "/favicon.ico", "/swagger-ui/**", "/v3/api-docs/**", "/error", "/actuator/**", "/**")
+                .securityMatcher(
+                        "/", "/index.html", "/favicon.ico",
+                        "/swagger-ui/**", "/v3/api-docs/**",
+                        "/error", "/actuator/**"
+                )
                 .cors(c -> c.configurationSource(corsConfigurationSource()))
                 .csrf(csrf -> csrf.disable())
                 .authorizeHttpRequests(auth -> auth.anyRequest().permitAll());
@@ -65,15 +69,16 @@ public class SecurityConfig {
         return http.build();
     }
 
+    // Auth provider
     @Bean
     public DaoAuthenticationProvider authenticationProvider() {
         DaoAuthenticationProvider provider = new DaoAuthenticationProvider();
-        // setUserDetailsService is deprecated but still the way to wire a plain UDS with DaoAuthenticationProvider
-        provider.setUserDetailsService(customUserDetailsService);
+        provider.setUserDetailsService(customUserDetailsService); // deprecated warning is fine
         provider.setPasswordEncoder(passwordEncoder());
         return provider;
     }
 
+    // Auth manager
     @Bean
     public AuthenticationManager authenticationManager(AuthenticationConfiguration cfg) throws Exception {
         return cfg.getAuthenticationManager();
@@ -84,21 +89,19 @@ public class SecurityConfig {
         return new BCryptPasswordEncoder();
     }
 
-
+    // CORS setup
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration cfg = new CorsConfiguration();
-
         cfg.setAllowedOrigins(List.of(
-                "http://localhost:3000",   // React default
-                "http://localhost:4200",   // Angular default
+                "http://localhost:3000",   // React
+                "http://localhost:4200",   // Angular
                 "https://hireorbit-52d04.web.app",
                 "https://hireorbit.web.app",
                 "https://hireorbit-52d04.firebaseapp.com"
         ));
-
         cfg.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH"));
-        cfg.setAllowedHeaders(List.of("*")); // allow all headers for safety
+        cfg.setAllowedHeaders(List.of("*"));
         cfg.setAllowCredentials(true);
 
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
