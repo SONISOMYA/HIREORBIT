@@ -30,6 +30,15 @@ public class AuthController {
     private final JwtUtil jwtUtil;
     private final UserService userService;
 
+    @RestController
+    public class HomeController {
+        @GetMapping("/")
+        public String home() {
+            return "🚀 HireOrbit Backend is running! Use /api/auth/... or /api/user/... endpoints.";
+        }
+    }
+
+
     @PostMapping("/register")
     public ResponseEntity<String> register(@RequestBody User user) {
         if (userRepository.existsByUsername(user.getUsername())) {
