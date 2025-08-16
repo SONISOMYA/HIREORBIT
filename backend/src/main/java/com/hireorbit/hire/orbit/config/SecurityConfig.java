@@ -84,17 +84,21 @@ public class SecurityConfig {
         return new BCryptPasswordEncoder();
     }
 
+
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration cfg = new CorsConfiguration();
+
         cfg.setAllowedOrigins(List.of(
+                "http://localhost:3000",   // React default
+                "http://localhost:4200",   // Angular default
                 "https://hireorbit-52d04.web.app",
                 "https://hireorbit.web.app",
-                "http://localhost:4200",
                 "https://hireorbit-52d04.firebaseapp.com"
         ));
+
         cfg.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH"));
-        cfg.setAllowedHeaders(List.of("Authorization", "Content-Type"));
+        cfg.setAllowedHeaders(List.of("*")); // allow all headers for safety
         cfg.setAllowCredentials(true);
 
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();

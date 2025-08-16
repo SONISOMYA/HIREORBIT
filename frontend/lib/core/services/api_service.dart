@@ -3,8 +3,7 @@ import 'package:http/http.dart' as http;  // 👈 this import was missing
 
 class ApiService {
   final String baseUrl = "https://hireorbit.onrender.com/api"; 
-  // 👆 Always include /api here
-
+ 
   // POST request
   Future<http.Response> post(String path, Map<String, dynamic> body,
       {Map<String, String>? headers}) async {
