@@ -52,8 +52,15 @@ class _LoginFormState extends State<LoginForm> {
                         usernameController.text.trim(),
                         passwordController.text.trim(),
                       );
+
                       if (success) {
-                        Navigator.pushReplacementNamed(context, '/home');
+                        // ✅ Conditional navigation
+                        if (authProvider.email == null ||
+                            authProvider.email!.isEmpty) {
+                          Navigator.pushReplacementNamed(context, '/email');
+                        } else {
+                          Navigator.pushReplacementNamed(context, '/home');
+                        }
                       } else {
                         ScaffoldMessenger.of(context).showSnackBar(
                           const SnackBar(

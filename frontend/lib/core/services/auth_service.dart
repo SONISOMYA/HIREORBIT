@@ -84,26 +84,26 @@ class AuthService {
   }
 
   /// Update user email
-  Future<bool> updateEmail(String token, String email) async {
-    final url = Uri.parse('$baseUrl/api/auth/email');
+ Future<bool> updateEmail(String token, String email) async {
+  final url = Uri.parse('$baseUrl/api/user/update-email'); // <-- updated
 
-    try {
-      final response = await http.put(
-        url,
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': 'Bearer $token',
-        },
-        body: jsonEncode({'email': email}),
-      );
+  try {
+    final response = await http.put(
+      url,
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer $token',
+      },
+      body: jsonEncode({'email': email}),
+    );
 
-      if (response.statusCode == 200) return true;
+    if (response.statusCode == 200) return true;
 
-      print('Update email failed: ${response.statusCode} - ${response.body}');
-      return false;
-    } catch (e) {
-      print('Update email exception: $e');
-      return false;
-    }
+    print('Update email failed: ${response.statusCode} - ${response.body}');
+    return false;
+  } catch (e) {
+    print('Update email exception: $e');
+    return false;
   }
+}
 }

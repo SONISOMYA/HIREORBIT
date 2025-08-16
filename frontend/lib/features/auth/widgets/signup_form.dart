@@ -53,14 +53,16 @@ class _SignUpFormState extends State<SignUpForm> {
                         usernameController.text.trim(),
                         passwordController.text.trim(),
                       );
+
                       if (success) {
                         ScaffoldMessenger.of(context).showSnackBar(
                           const SnackBar(
-                            content: Text('Sign up successful! Please login.'),
+                            content: Text(
+                                'Sign up successful! Please set your email.'),
                             backgroundColor: Colors.green,
                           ),
                         );
-                        Navigator.pop(context); // Back to login screen
+                        Navigator.pushReplacementNamed(context, '/email');
                       } else {
                         ScaffoldMessenger.of(context).showSnackBar(
                           const SnackBar(
