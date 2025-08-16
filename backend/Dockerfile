@@ -1,15 +1,31 @@
+# ---- Build stage ----
 FROM maven:3.9.8-eclipse-temurin-21 AS build
 
-COPY . .
+WORKDIR /app
 
+# First, copy only the pom.xml (to cache dependencies)
+COPY pom.xml .
+
+# Download dependencies (cached in Docker layer)
+RUN mvn dependency:go-offline -B
+
+# Now copy the actual source code
+COPY src ./src
+
+# Build the project (skip tests for faster build)
 RUN mvn clean package -DskipTests
 
- 
+
+# ---- Runtime stage ----
 FROM eclipse-temurin:21-jdk-alpine
+
+WORKDIR /app
+
+# Copy the built jar from the build stage
 COPY --from=build /app/target/hire-orbit-0.0.1-SNAPSHOT.jar app.jar
 
-# Expose the port (Render uses $PORT)
+# Expose Render's $PORT
 EXPOSE 8080
 
-# Pass Render's PORT env var to Spring Boot
+# Start Spring Boot app
 ENTRYPOINT ["java", "-jar", "app.jar"]
