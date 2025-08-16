@@ -3,11 +3,11 @@ import 'package:http/http.dart' as http;
 
 class AuthService {
   // Full base URL including /api
-  final String baseUrl = "https://hireorbit.onrender.com/api";
+  final String baseUrl = "https://hireorbit.onrender.com";
 
   /// ✅ Register user
   Future<bool> register(String username, String password) async {
-    final url = Uri.parse('$baseUrl/auth/register');
+    final url = Uri.parse('$baseUrl/api/auth/register');
     final response = await http.post(
       url,
       headers: {'Content-Type': 'application/json'},
@@ -28,7 +28,7 @@ class AuthService {
 
   /// ✅ Login user
   Future<String?> login(String username, String password) async {
-    final url = Uri.parse('$baseUrl/auth/login');
+    final url = Uri.parse('$baseUrl/api/auth/login');
     final response = await http.post(
       url,
       headers: {'Content-Type': 'application/json'},
