@@ -1,10 +1,5 @@
 import 'dart:convert';
-import 'package:http/http.dart' as http;
-
-import 'api_service.dart';
-
-const String baseUrl =
-    "https://hireorbit.onrender.com"; // or your actual backend URL
+import '../services/api_service.dart';
 
 class AuthService {
   final ApiService _apiService = ApiService();
@@ -28,18 +23,15 @@ class AuthService {
       final data = jsonDecode(response.body);
       return data['token'];
     } else {
-      // ignore: avoid_print
       print('Login failed: ${response.body}');
       return null;
     }
   }
 
   Future<String?> fetchEmail(String token) async {
-    final response = await http.get(
-      Uri.parse('$baseUrl/api/user/email'),
-      headers: {
-        'Authorization': 'Bearer $token',
-      },
+    final response = await _apiService.get(
+      '/user/email',
+      headers: {'Authorization': 'Bearer $token'},
     );
 
     if (response.statusCode == 200) {
@@ -51,13 +43,10 @@ class AuthService {
   }
 
   Future<bool> updateEmail(String token, String email) async {
-    final response = await http.put(
-      Uri.parse('$baseUrl/auth/email'),
-      headers: {
-        'Authorization': 'Bearer $token',
-        'Content-Type': 'application/json',
-      },
-      body: jsonEncode({'email': email}),
+    final response = await _apiService.put(
+      '/auth/email',
+      {'email': email},
+      headers: {'Authorization': 'Bearer $token'},
     );
 
     return response.statusCode == 200;
