@@ -67,8 +67,8 @@ public class SecurityConfig {
         config.setAllowedOrigins(List.of(
                 "https://hireorbit-52d04.web.app",
                 "https://hireorbit.web.app",
-                "http://localhost:4200",  // for local dev (if using Angular)
-                "http://localhost:3000"   // for local dev (if using React)
+                "http://localhost:4200",
+                "https://hireorbit-52d04.firebaseapp.com"
         ));
 
         config.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
