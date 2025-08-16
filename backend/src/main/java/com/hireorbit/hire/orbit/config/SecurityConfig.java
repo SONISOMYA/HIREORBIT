@@ -95,7 +95,7 @@ public class SecurityConfig {
         CorsConfiguration cfg = new CorsConfiguration();
         cfg.setAllowedOrigins(List.of(
                 "http://localhost:3000",   // React
-                "http://localhost:4200",   // Angular
+                "http://localhost:5000",   // Angular
                 "https://hireorbit-52d04.web.app",
                 "https://hireorbit.web.app",
                 "https://hireorbit-52d04.firebaseapp.com"
