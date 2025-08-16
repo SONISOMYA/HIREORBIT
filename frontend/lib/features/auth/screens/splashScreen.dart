@@ -10,7 +10,8 @@ class SplashScreen extends StatefulWidget {
   State<SplashScreen> createState() => _SplashScreenState();
 }
 
-class _SplashScreenState extends State<SplashScreen> with SingleTickerProviderStateMixin {
+class _SplashScreenState extends State<SplashScreen>
+    with SingleTickerProviderStateMixin {
   late AnimationController _controller;
   late Animation<double> _fadeAnimation;
 
@@ -18,6 +19,7 @@ class _SplashScreenState extends State<SplashScreen> with SingleTickerProviderSt
   void initState() {
     super.initState();
 
+    // Animation setup
     _controller = AnimationController(
       vsync: this,
       duration: const Duration(seconds: 2),
@@ -26,18 +28,33 @@ class _SplashScreenState extends State<SplashScreen> with SingleTickerProviderSt
 
     _controller.forward();
 
-    _initApp();
+    // Initialize app after build completes
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _initApp();
+    });
   }
 
   Future<void> _initApp() async {
-    await Provider.of<AuthProvider>(context, listen: false).loadToken();
-    final token = Provider.of<AuthProvider>(context, listen: false).token;
+    try {
+      final authProvider = Provider.of<AuthProvider>(context, listen: false);
 
-    await Future.delayed(const Duration(seconds: 2));
+      // Load token from SharedPreferences
+      await authProvider.loadToken();
+      final token = authProvider.token;
+      print('Loaded token: $token'); // Debug
 
-    if (token != null) {
-      Navigator.pushReplacementNamed(context, '/home');
-    } else {
+      // Keep splash screen visible for 2 seconds
+      await Future.delayed(const Duration(seconds: 2));
+
+      // Navigate based on token
+      if (token != null && token.isNotEmpty) {
+        Navigator.pushReplacementNamed(context, '/home');
+      } else {
+        Navigator.pushReplacementNamed(context, '/');
+      }
+    } catch (e) {
+      // On error, navigate to login screen
+      print('Error during splash init: $e');
       Navigator.pushReplacementNamed(context, '/');
     }
   }

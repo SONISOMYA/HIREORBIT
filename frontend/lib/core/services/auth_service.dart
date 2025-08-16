@@ -58,6 +58,7 @@ class AuthService {
       },
       body: jsonEncode({'email': email}),
     );
+    
 
     if (response.statusCode == 200) return true;
     print('Update email failed: ${response.body}');

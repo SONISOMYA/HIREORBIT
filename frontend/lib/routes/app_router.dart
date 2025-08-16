@@ -14,7 +14,7 @@ class AppRouter {
         return MaterialPageRoute(builder: (_) => const HomeScreen());
       case '/splash':
         return MaterialPageRoute(builder: (_) => const SplashScreen());
-        case '/email':
+      case '/email':
         return MaterialPageRoute(builder: (_) => const EmailInputScreen());
       case '/':
       default:
