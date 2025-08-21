@@ -1,5 +1,5 @@
 # HireOrbit — Internship & Job Application Tracker
-check out https://hireorbit-52d04.firebaseapp.com/
+check out https://hireorbit-52d04.web.app/
 
 
 HireOrbit is your personal assistant for managing all your internship and job applications in one organized place.  
